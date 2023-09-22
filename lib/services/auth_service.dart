@@ -4,7 +4,7 @@ import 'package:bingo/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-String uri = 'http://10.100.149.135:5000';
+String uri = 'https://bingo-7rct.onrender.com';
 
 class AuthService {
   void userLogin({
@@ -23,18 +23,19 @@ class AuthService {
       );
 
       http.Response res = await http.post(Uri.parse('$uri/usersignup'),
-          body: user.toJson(),
+          body: user.toJson({'mobileNumber': mobileNumber}),
           headers: <String, String>{
-            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Type': 'application/json; charset=UTF-8',
           });
           print(res.body);
 
           if(res.statusCode == 200) {
-            final Map<String, dynamic> responseData = jsonDecode(res.body);
-            print(responseData);
-          } else if(res.statusCode == 400) {
+            final Map<String, dynamic> resData = jsonDecode(res.body);
+            print(resData);
+          } 
+          else if(res.statusCode == 400 && context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(res.body)['message'])));
-          } else if(res.statusCode == 500) {
+          } else if(res.statusCode == 500 && context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(jsonDecode(res.body)['error'])));
           }
 

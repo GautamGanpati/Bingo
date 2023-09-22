@@ -3,9 +3,8 @@ import 'package:bingo/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class EnterOtp extends StatefulWidget {
-  var mobileNumber;
 
-  EnterOtp({super.key, required this.mobileNumber});
+  const EnterOtp({super.key});
 
   @override
   State<EnterOtp> createState() => _EnterOtpState();

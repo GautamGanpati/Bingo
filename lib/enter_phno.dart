@@ -1,5 +1,6 @@
 import 'package:bingo/enter_otp.dart';
 import 'package:bingo/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EnterPhNo extends StatefulWidget {
@@ -14,6 +15,7 @@ class _EnterPhNoState extends State<EnterPhNo> {
   TextEditingController phoneController = TextEditingController();
   final userLoginFormKey = GlobalKey<FormState>();
   final adminLoginFormKey = GlobalKey<FormState>();
+  var phone = '';
 
   void dispse() {
     phoneController.dispose();
@@ -26,16 +28,21 @@ class _EnterPhNoState extends State<EnterPhNo> {
     final width = MediaQuery.of(context).size.width;
     final AuthService authService = AuthService();
 
-    void userLogin() async {
+    void userSignup() async {
       final mobileNumber = phoneController.text.trim();
       authService.userLogin(
         context: context,
-        mobileNumber: mobileNumber,
+        mobileNumber: '+91$mobileNumber',
+      );
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+44 7123 123 456',
+        verificationCompleted: (PhoneAuthCredential credential) {},
+        verificationFailed: (FirebaseAuthException e) {},
+        codeSent: (String verificationId, int? resendToken) {},
+        codeAutoRetrievalTimeout: (String verificationId) {},
       );
       Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return EnterOtp(
-          mobileNumber: phoneController.text.trim(),
-        );
+        return const EnterOtp();
       })));
     }
 
@@ -210,6 +217,9 @@ class _EnterPhNoState extends State<EnterPhNo> {
                                           ? adminLoginFormKey
                                           : userLoginFormKey,
                                       child: TextFormField(
+                                        onChanged: (value) {
+                                          phone = value;
+                                        },
                                         validator: (value) {
                                           if (value == null ||
                                               value.length > 10 ||
@@ -345,7 +355,7 @@ class _EnterPhNoState extends State<EnterPhNo> {
                                           255, 243, 228, 174)),
                                   child: Checkbox(
                                     activeColor:
-                                        Color.fromARGB(255, 124, 23, 23),
+                                        const Color.fromARGB(255, 124, 23, 23),
                                     value: adminLogin,
                                     onChanged: (bool? val) {
                                       setState(() {
@@ -382,13 +392,7 @@ class _EnterPhNoState extends State<EnterPhNo> {
                         child: GestureDetector(
                           onTap: () {
                             if (userLoginFormKey.currentState!.validate()) {
-                              userLogin();
-                              // Navigator.of(context)
-                              //     .push(MaterialPageRoute(builder: ((context) {
-                              //   return EnterOtp(
-                              //     mobileNumber: phoneController.text.trim(),
-                              //   );
-                              // })));
+                              userSignup();
                             }
                           },
                           child: Container(

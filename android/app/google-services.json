@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "826780985984",
+    "project_id": "bingowin-365c5",
+    "storage_bucket": "bingowin-365c5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826780985984:android:e726285edecf072b02d465",
+        "android_client_info": {
+          "package_name": "com.example.bingo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqxMvWtbyx-TD-GpykJV0refUXgiQ1XT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
