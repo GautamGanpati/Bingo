@@ -1,3 +1,4 @@
+import 'package:bingo/countrycode.dart';
 import 'package:bingo/enter_otp.dart';
 import 'package:bingo/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class EnterPhNo extends StatefulWidget {
   const EnterPhNo({super.key});
+  static String verify = '';
 
   @override
   State<EnterPhNo> createState() => _EnterPhNoState();
@@ -12,15 +14,16 @@ class EnterPhNo extends StatefulWidget {
 
 class _EnterPhNoState extends State<EnterPhNo> {
   bool adminLogin = false;
-  TextEditingController phoneController = TextEditingController();
+  //TextEditingController phoneController = TextEditingController();
   final userLoginFormKey = GlobalKey<FormState>();
   final adminLoginFormKey = GlobalKey<FormState>();
-  var phone = '';
+  String phone = '';
+  var code = '';
 
-  void dispse() {
-    phoneController.dispose();
-    super.dispose();
-  }
+  // void dispse() {
+  //   phoneController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +32,23 @@ class _EnterPhNoState extends State<EnterPhNo> {
     final AuthService authService = AuthService();
 
     void userSignup() async {
-      final mobileNumber = phoneController.text.trim();
-      authService.userLogin(
-        context: context,
-        mobileNumber: '+91$mobileNumber',
-      );
+      // final mobileNumber = phoneController.text.trim();
+      // authService.userLogin(
+      //   context: context,
+      //   mobileNumber: '+91$mobileNumber',
+      // );
       await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+44 7123 123 456',
+        phoneNumber: '+91$phone',
         verificationCompleted: (PhoneAuthCredential credential) {},
         verificationFailed: (FirebaseAuthException e) {},
-        codeSent: (String verificationId, int? resendToken) {},
+        codeSent: (String verificationId, int? resendToken) {
+          EnterPhNo.verify = verificationId;
+          Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
+            return const EnterOtp();
+          })));
+        },
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
-      Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-        return const EnterOtp();
-      })));
     }
 
     return SafeArea(
@@ -158,7 +163,20 @@ class _EnterPhNoState extends State<EnterPhNo> {
                                             decoration: const InputDecoration(
                                               border: InputBorder.none,
                                             ),
-                                            items: const [],
+                                            items: [
+                                              // for (final code in countryCode)
+                                              //   DropdownMenuItem(
+                                              //       child: Row(
+                                              //     children: [
+                                              //       Text(''
+                                              //           ),
+                                              //       SizedBox(
+                                              //         width: 5,
+                                              //       ),
+                                              //       Text(''),
+                                              //     ],
+                                              //   ))
+                                            ],
                                             onChanged: (value) {},
                                           ),
                                         ),
@@ -230,7 +248,7 @@ class _EnterPhNoState extends State<EnterPhNo> {
                                           }
                                         },
                                         keyboardType: TextInputType.phone,
-                                        controller: phoneController,
+                                        //controller: phoneController,
                                         cursorColor: const Color.fromARGB(
                                             255, 124, 23, 23),
                                         decoration: const InputDecoration(
