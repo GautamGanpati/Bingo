@@ -39,6 +39,7 @@ dependencies:
   http: ^0.13.6
   firebase_core: ^2.16.0
   firebase_auth: ^4.10.0
+  country_picker: ^2.0.20
   pinput: ^3.0.1
 
 dev_dependencies:

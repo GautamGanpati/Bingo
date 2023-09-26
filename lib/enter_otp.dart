@@ -13,15 +13,13 @@ class EnterOtp extends StatefulWidget {
 }
 
 class _EnterOtpState extends State<EnterOtp> {
-  TextEditingController otpController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final AuthService authService = AuthService();
     final FirebaseAuth auth = FirebaseAuth.instance;
-    var code = '';
+    String code = '';
 
     final defaultPinTheme = PinTheme(
       width: width / 8,
@@ -125,7 +123,7 @@ class _EnterOtpState extends State<EnterOtp> {
                                 child: Pinput(
                                   defaultPinTheme: defaultPinTheme,
                                   length: 6,
-                                  onChanged: (value) {
+                                  onCompleted: (value) {
                                     code = value;
                                   },
                                 ),
@@ -221,15 +219,20 @@ class _EnterOtpState extends State<EnterOtp> {
                             bottom: height / 80),
                         child: GestureDetector(
                           onTap: () async {
-                            PhoneAuthCredential credential =
-                                PhoneAuthProvider.credential(
-                                    verificationId: EnterPhNo.verify,
-                                    smsCode: code);
-                            await auth.signInWithCredential(credential);
-                            Navigator.of(context)
-                                .push(MaterialPageRoute(builder: ((context) {
-                              return  const AdminHome();
-                            })));
+                            try {
+                              PhoneAuthCredential credential =
+                                  PhoneAuthProvider.credential(
+                                verificationId: EnterPhNo.verify,
+                                smsCode: code,
+                              );
+                              await auth.signInWithCredential(credential);
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: ((context) {
+                                return const AdminHome();
+                              })));
+                            } catch (e) {
+                              print(e.toString());
+                            }
                           },
                           child: Container(
                             height: height / 11.5,

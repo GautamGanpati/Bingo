@@ -1,6 +1,6 @@
-import 'package:bingo/countrycode.dart';
 import 'package:bingo/enter_otp.dart';
 import 'package:bingo/services/auth_service.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -18,18 +18,31 @@ class _EnterPhNoState extends State<EnterPhNo> {
   final userLoginFormKey = GlobalKey<FormState>();
   final adminLoginFormKey = GlobalKey<FormState>();
   String phone = '';
-  var code = '';
 
   // void dispse() {
   //   phoneController.dispose();
   //   super.dispose();
   // }
 
+  Country country = Country(
+    phoneCode: '91',
+    countryCode: 'IN',
+    e164Sc: 0,
+    geographic: true,
+    level: 1,
+    name: 'India',
+    example: 'India',
+    displayName: 'India',
+    displayNameNoCountryCode: 'IN',
+    e164Key: '',
+  );
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final AuthService authService = AuthService();
+    final FirebaseAuth auth = FirebaseAuth.instance;
 
     void userSignup() async {
       // final mobileNumber = phoneController.text.trim();
@@ -38,13 +51,15 @@ class _EnterPhNoState extends State<EnterPhNo> {
       //   mobileNumber: '+91$mobileNumber',
       // );
       await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: '+91$phone',
-        verificationCompleted: (PhoneAuthCredential credential) {},
+        phoneNumber: '+${country.phoneCode}$phone',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await auth.signInWithCredential(credential);
+        },
         verificationFailed: (FirebaseAuthException e) {},
-        codeSent: (String verificationId, int? resendToken) {
-          EnterPhNo.verify = verificationId;
+        codeSent: (verificationId, forceResendingToken) {
+          verificationId = EnterPhNo.verify;
           Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-            return const EnterOtp();
+            return  const EnterOtp();
           })));
         },
         codeAutoRetrievalTimeout: (String verificationId) {},
@@ -152,53 +167,52 @@ class _EnterPhNoState extends State<EnterPhNo> {
                                     child: Row(
                                       children: [
                                         Expanded(
-                                          child: DropdownButtonFormField(
-                                            iconSize: 28,
-                                            iconEnabledColor:
-                                                const Color.fromARGB(
+                                            child: Container(
+                                          padding: EdgeInsets.all(width / 45),
+                                          child: InkWell(
+                                            onTap: () {
+                                              showCountryPicker(
+                                                  countryListTheme:
+                                                      CountryListThemeData(
+                                                          bottomSheetHeight:
+                                                              height / 1.8),
+                                                  context: context,
+                                                  onSelect: (value) {
+                                                    setState(() {
+                                                      country = value;
+                                                    });
+                                                  });
+                                            },
+                                            child: Text(
+                                              '${country.countryCode} + ${country.phoneCode}',
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w900,
+                                                color: Color.fromARGB(
                                                     255, 124, 23, 23),
-                                            iconDisabledColor:
-                                                const Color.fromARGB(
-                                                    255, 124, 23, 23),
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                            ),
-                                            items: [
-                                              // for (final code in countryCode)
-                                              //   DropdownMenuItem(
-                                              //       child: Row(
-                                              //     children: [
-                                              //       Text(''
-                                              //           ),
-                                              //       SizedBox(
-                                              //         width: 5,
-                                              //       ),
-                                              //       Text(''),
-                                              //     ],
-                                              //   ))
-                                            ],
-                                            onChanged: (value) {},
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          width: width / 72,
-                                        ),
-                                        Expanded(
-                                          child: TextFormField(
-                                            initialValue: '+91',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w900,
-                                              color: Color.fromARGB(
-                                                  255, 124, 23, 23),
-                                            ),
-                                            cursorColor: const Color.fromARGB(
-                                                255, 124, 23, 23),
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        )),
+                                        // SizedBox(
+                                        //   width: width / 72,
+                                        // ),
+                                        // Expanded(
+                                        //   child: TextFormField(
+                                        //     initialValue: '+91',
+                                        //     style: const TextStyle(
+                                        //       fontSize: 16,
+                                        //       fontWeight: FontWeight.w900,
+                                        //       color: Color.fromARGB(
+                                        //           255, 124, 23, 23),
+                                        //     ),
+                                        //     cursorColor: const Color.fromARGB(
+                                        //         255, 124, 23, 23),
+                                        //     decoration: const InputDecoration(
+                                        //       border: InputBorder.none,
+                                        //     ),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),
